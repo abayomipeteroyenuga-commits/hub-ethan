@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verifying Ethan ID</title></head>
+<body>
+<p>Verifying your Ethan ID…</p>
+<script>
+(function () {
+  const q = window.location.search || "";
+  const h = window.location.hash || "";
+  // Preserve Supabase's confirmation payload exactly when handing it to the main app.
+  window.location.replace("/" + q + h);
+})();
+</script>
+</body>
+</html>
