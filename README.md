@@ -1,18 +1,15 @@
-ETHAN HUB v4.1 — PHYSICAL CALLBACK ROUTE
+ETHAN HUB v4.2 — DIRECT SUPABASE CALLBACK
 
-This build fixes Vercel 404 by including a real:
-auth/callback.html
+Based directly on the uploaded v4.1 deployment.
 
-With Vercel cleanUrls enabled, it is available publicly as:
-/auth/callback
+Fix:
+- /auth/callback now processes the Supabase PKCE `code` itself.
+- Calls exchangeCodeForSession(code).
+- Requires a real session before redirecting.
+- Shows “Email verified successfully” before opening Ethan Hub.
+- Session is persisted by Supabase in the browser.
+- No forwarding of an unprocessed code to the homepage.
+- No Super Admin approval gate.
 
-The callback preserves the Supabase query/hash confirmation payload and hands it to the main app.
-The main app then processes the code and signs the user in.
-
-Upload the EXTRACTED contents to the repository root.
-Expected root:
-index.html
-vercel.json
-auth/callback.html
-supabase/...
-README.md
+Upload the extracted contents to the SAME fresh GitHub repository and let Vercel redeploy.
+Do not change the domain or Supabase URL Configuration.

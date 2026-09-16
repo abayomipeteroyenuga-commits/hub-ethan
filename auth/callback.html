@@ -1,16 +1,39 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verifying Ethan ID</title></head>
-<body>
-<p>Verifying your Ethan ID…</p>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verifying Ethan ID</title>
+<style>
+body{font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f7f9fc;color:#0b1f3a}
+.card{max-width:520px;padding:32px;text-align:center}
+h2{margin-bottom:10px} p{line-height:1.55}
+</style>
+</head>
+<body><div class="card"><h2 id="title">Verifying your Ethan ID…</h2><p id="msg">Please wait while we securely complete your sign-in.</p></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-(function () {
-  const q = window.location.search || "";
-  const h = window.location.hash || "";
-  // Preserve Supabase's confirmation payload exactly when handing it to the main app.
-  window.location.replace("/" + q + h);
+(async function(){
+ const title=document.getElementById('title'), msg=document.getElementById('msg');
+ try {
+   const sb=supabase.createClient("https://hsigpjyvuvqdmujklcvw.supabase.co", "sb_publishable_LghFHw2wsTICWz3FmjFBew_zjk62iA_", {
+     auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:false }
+   });
+   const u=new URL(location.href);
+   const code=u.searchParams.get('code');
+   if(!code) throw new Error('The confirmation code is missing. Please use the newest verification email.');
+   const {data,error}=await sb.auth.exchangeCodeForSession(code);
+   if(error) throw error;
+   if(!data || !data.session) throw new Error('Verification completed but no sign-in session was created.');
+   // Best-effort profile synchronization; session success is authoritative.
+   try { await sb.rpc('mark_my_ethan_email_verified'); } catch(e) {}
+   title.textContent='Email verified successfully';
+   msg.textContent='Opening Ethan Hub…';
+   history.replaceState({},'',location.origin+'/auth/callback');
+   setTimeout(()=>location.replace(location.origin+'/'),700);
+ } catch(e) {
+   title.textContent='Verification could not be completed';
+   msg.textContent=(e && e.message) ? e.message : 'Please request a new verification email and try again.';
+ }
 })();
-</script>
-</body>
-</html>
+</script></body></html>
