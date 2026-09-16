@@ -1,15 +1,12 @@
-ETHAN HUB v4.2 — DIRECT SUPABASE CALLBACK
+ETHAN HUB v4.3 — MULTI-MODE SUPABASE CALLBACK
+Based on v4.2.
 
-Based directly on the uploaded v4.1 deployment.
+The physical /auth/callback now supports:
+- PKCE ?code=... confirmation
+- implicit #access_token + refresh_token confirmation
+- Supabase detectSessionInUrl session recovery
+- Supabase error fragments/query parameters
+- persisted browser session before redirecting to Hub
 
-Fix:
-- /auth/callback now processes the Supabase PKCE `code` itself.
-- Calls exchangeCodeForSession(code).
-- Requires a real session before redirecting.
-- Shows “Email verified successfully” before opening Ethan Hub.
-- Session is persisted by Supabase in the browser.
-- No forwarding of an unprocessed code to the homepage.
-- No Super Admin approval gate.
-
-Upload the extracted contents to the SAME fresh GitHub repository and let Vercel redeploy.
-Do not change the domain or Supabase URL Configuration.
+Use a NEW confirmation email. Do not reuse an already-clicked or previously shared verification token.
+Upload extracted contents to the existing fresh GitHub repository and allow Vercel to redeploy.
