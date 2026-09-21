@@ -97,6 +97,7 @@
   payUrl:'https://pay.ethandigitalacademy.org',
   codeUrl:'https://learncoding.ethandigitalacademy.org',
   tutorUrl:'https://tutor.ethandigitalacademy.org',
+  kidsUrl:'https://kids.ethandigitalacademy.org', // Ethan Kids deployment URL.
   creatorUrl:'https://create.ethandigitalacademy.org', // Ethan Creator website.
   documentUrl:'https://document.ethandigitalacademy.org',
   cityDriveUrl:'https://citydrive.ethandigitalacademy.org',
@@ -122,6 +123,7 @@ const apps=[
  ['☁️','Ethan Cloud','Private files, folders and Ethan workspace storage.',cfg.cloudUrl,'cloud','sso'],
  ['💳','Ethan Pay','Central Ethan payment and transaction portal.',cfg.payUrl,null,'hub'],
  ['💻','Ethan Code','Learn coding through guided lessons, practice and projects.',cfg.codeUrl,null,'hub'],
+ ['🧩','Ethan Kids','Creative coding, puzzles and projects through Ethan ID.',cfg.kidsUrl,'kids','sso'],
  ['🤖','Ethan Tutor AI','Personal AI tutoring, guided explanations, practice, revision and academic support.',cfg.tutorUrl,null,'hub'],
  ['🎨','Ethan Creator','Graphic design, video editing and website creation with Ethan ID.',cfg.creatorUrl,null,'hub'],
  ['📍','Ethan GPS','Navigation and location tools.',cfg.gpsUrl,null,'hub'],
@@ -137,7 +139,7 @@ function renderApps(){
  for(const [i,a] of apps.entries()){
   const d=document.createElement('article');d.className='app'; d.setAttribute('data-app-number', String(i+1));
   const badge=a[5]==='sso'?'<span class="status sso">ETHAN ID</span>':'<span class="status hub">HUB ACCESS</span>';
-  if(!a[3]){d.classList.add('coming-soon');d.setAttribute('title','Set the deployed Ethan Creator URL in ETHAN_HUB_CONFIG to enable Open');}
+  if(!a[3]){d.classList.add('coming-soon');d.setAttribute('title','Set the deployed app URL in ETHAN_HUB_CONFIG to enable Open');}
   d.innerHTML=`<div class="apphead"><div class="icon">${a[0]}</div>${badge}</div><h3>${i+1}. ${a[1]}</h3><p>${a[2]}</p><button type="button" data-url="${a[3]}" data-target="${a[4]||''}">Open</button>`;
   if(!a[3]){const b=d.querySelector('button');b.disabled=true;b.textContent='URL needed';b.title='Set creatorUrl to your deployed Creator address in index.html';}
   grid.appendChild(d);
@@ -174,20 +176,21 @@ async function showDashboard(user){
 }
 async function openApp(button,url,target){
  // Apps not yet migrated to Ethan ID open directly. Only Cloud uses SSO today.
- if(target!=='cloud'){ window.location.href=url; return; }
+ if(target!=='cloud' && target!=='kids'){ window.location.href=url; return; }
  const {data:{session}}=await sb.auth.getSession();
  if(!session)return showAuth('Please sign in to Ethan ID first.');
- if(!cfg.ssoFunctionUrl){window.location.href=url;return}
+ if(!cfg.ssoFunctionUrl){if(target==='kids'){alert('Ethan ID handoff is not configured.');return;}window.location.href=url;return}
  const old=button.textContent;button.disabled=true;button.textContent='Connecting…';
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),6000);
  try{
-  const r=await fetch(cfg.ssoFunctionUrl,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({action:'create',target:'cloud'})});
+  const r=await fetch(cfg.ssoFunctionUrl,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({action:'create',target})});
   const o=await r.json();
   if(!r.ok||!o.ticket)throw new Error(o.error||'Unable to connect.');
   const u=new URL(url);u.searchParams.set('ethan_sso',o.ticket);window.location.href=u.toString();
  }catch(e){
-  console.warn('Cloud SSO unavailable; opening Cloud normally.',e);
+  console.warn('Ethan ID handoff unavailable.',e);
+  if(target==='kids'){alert('Ethan Kids could not verify your Ethan ID. Please try again.');return;}
   window.location.href=url;
  }finally{clearTimeout(timer);button.disabled=false;button.textContent=old}
 }
