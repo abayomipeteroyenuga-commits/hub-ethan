@@ -101,7 +101,7 @@
   creatorUrl:'https://create.ethandigitalacademy.org', // Ethan Creator website.
   documentUrl:'https://document.ethandigitalacademy.org',
   cityDriveUrl:'https://citydrive.ethandigitalacademy.org',
-  ssoFunctionUrl:'https://hrymakhatxjitbgpdbjk.supabase.co/functions/v1/ethan-sso'
+  ssoFunctionUrl:'https://hrymakhatxjitbgpdbjk.supabase.co/functions/v1/ethan-sso', kidsSsoFunctionUrl:'https://hrymakhatxjitbgpdbjk.supabase.co/functions/v1/ethan-sso-kids'
 };
 </script><script>const cfg=window.ETHAN_HUB_CONFIG||{};
 const $=s=>document.querySelector(s);
@@ -184,7 +184,7 @@ async function openApp(button,url,target){
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),6000);
  try{
-  const r=await fetch(cfg.ssoFunctionUrl,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({action:'create',target})});
+  const r=await fetch(target==='kids'?cfg.kidsSsoFunctionUrl:cfg.ssoFunctionUrl,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`},body:JSON.stringify({action:'create',target,refresh_token:target==='kids'?session.refresh_token:undefined})});
   const o=await r.json();
   if(!r.ok||!o.ticket)throw new Error(o.error||'Unable to connect.');
   const u=new URL(url);u.searchParams.set('ethan_sso',o.ticket);window.location.href=u.toString();
