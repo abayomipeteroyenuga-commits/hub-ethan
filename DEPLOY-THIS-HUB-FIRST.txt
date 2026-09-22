@@ -1,0 +1,9 @@
+ETHAN HUB v7.0 — 16 APPS, ETHAN KIDS CARD
+
+Upload the EXTRACTED FILES from this ZIP to the ROOT of the existing Ethan Hub GitHub repository, including index.html (replace the old one). Do not upload only the ZIP or put the files inside an extra folder.
+
+In Vercel > Ethan Hub project > Settings > Git, verify the repository and production branch match where you committed. In Settings > Build and Deployment, verify Root Directory is the repository root (unless intentionally configured otherwise). Open Deployments and deploy the latest commit to Production.
+
+After deployment, the bottom-right badge must read HUB v7.0 · 16 APPS · KIDS. If it does not, Vercel is serving another commit, branch, root directory, or project/domain; rebuilding ZIPs will not fix that.
+
+The Ethan Kids app card is included in the initial HTML as a fallback and in the 16-app JavaScript registry. The card opening with Ethan ID still requires the previously described secure Supabase Edge Function and adult-access approval. The static fallback opens the Kids domain directly, which must independently enforce authentication.
