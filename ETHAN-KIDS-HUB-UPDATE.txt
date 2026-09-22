@@ -1,0 +1,1 @@
+Ethan Kids is included in the 16 app dashboard list and points to https://kids.ethandigitalacademy.org. Upload the contents of this ZIP (not the ZIP itself) to your ETHAN HUB repository. Supabase Ethan Kids handoff still requires the separate setup and live testing.
